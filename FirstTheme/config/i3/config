@@ -42,7 +42,8 @@ bindsym $mod+Shift+q kill
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 #bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
-bindsym $mod+d exec --no-startup-id rofi 
+bindsym $mod+d exec --no-startup-id rofi -show drun -theme sidebar-perso
+#N-theme .config/i3/rofi.rasi
 
 
 # change focus
@@ -96,8 +97,9 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 set $workspace1 "1:"
-set $workspace2 "2:"
+set $workspace2 "2:"
 set $workspace3 "3:"
+set $workspace4 "4:"
 set $workspace5 "5:"
 set $workspace0 "10:"
 
@@ -105,7 +107,7 @@ set $workspace0 "10:"
 bindsym $mod+1 workspace $workspace1
 bindsym $mod+2 workspace $workspace2
 bindsym $mod+3 workspace $workspace3
-bindsym $mod+4 workspace 4
+bindsym $mod+4 workspace $workspace4
 bindsym $mod+5 workspace $workspace5
 bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
@@ -117,7 +119,7 @@ bindsym $mod+0 workspace $workspace0
 bindsym $mod+Shift+1 move container to workspace $workspace1
 bindsym $mod+Shift+2 move container to workspace $workspace2
 bindsym $mod+Shift+3 move container to workspace $workspace3
-bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+4 move container to workspace $workspace4
 bindsym $mod+Shift+5 move container to workspace $workspace5
 bindsym $mod+Shift+6 move container to workspace 6
 bindsym $mod+Shift+7 move container to workspace 7
@@ -126,7 +128,9 @@ bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace $workspace0
 
 # reload the configuration file
-bindsym $mod+Shift+c reload
+#bindsym $mod+Shift+c reload
+bindsym $mod+Shift+c exec = -theme sidebar-perso
+
 
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
@@ -135,7 +139,7 @@ bindsym $mod+Shift+r restart
 bindsym $mod+Shift+z exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
 # lock
-bindsym $mod+Shift+x exec i3lock --color 475263
+bindsym $mod+Shift+x exec ~/.config/i3/lock.sh
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -144,7 +148,7 @@ mode "resize" {
     # Pressing left will shrink the window’s width.
     # Pressing right will grow the window’s width.
     # Pressing up will shrink the window’s height.
-    # Pressing down will grow the window’s height.
+   # Pressing down will grow the window’s height.
     bindsym j resize shrink width 10 px or 10 ppt
     bindsym k resize grow height 10 px or 10 ppt
     bindsym l resize shrink height 10 px or 10 ppt
@@ -168,20 +172,27 @@ set $Red	#FF0000
 set $Orange	#FFA500
 set $Yellow	#FFFF00	
 set $Olive	#808000	
+set $Lightgreen #88cc22
 set $Navy	#0A0A40
+set $Purple1 #8a13cf
+set $Purple2 #8f52b3
 
-set $bg-color            #2f343f
-set $inactive-bg-color   #2f343f
+set $Purple3 #76348a
+set $Purple4 #4f1463A0
+
+#set $bg-color            #2f343f
+set $bg-color            #4f1463A0
+set $inactive-bg-color   #2f343fA0
 set $text-color          #f3f4f5
 set $inactive-text-color #676e7d
 set $urgent-bg-color     #e53935
 set $indicator-color0     #a0a0a0
-set $indicator-color     $Olive
+set $indicator-color     #808000
 
 
 # set window colors
 #                       border             background         text                 indicator
-client.focused          $bg-color          $Navy              $text-color          $indicator-color
+client.focused          $bg-color          $bg-color              $text-color          $indicator-color
 client.unfocused        $inactive-bg-color $inactive-bg-color $inactive-text-color $indicator-color
 client.focused_inactive $inactive-bg-color $inactive-bg-color $inactive-text-color $indicator-color
 client.urgent           $urgent-bg-color   $urgent-bg-color   $text-color          $indicator-color
@@ -190,24 +201,35 @@ hide_edge_borders both
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
+
+
 bar {
-    status_command i3status
+    status_command i3blocks
+    position bottom
+    workspace_buttons yes
     font pango:Hack 9
 
 	colors {
-        background $bg-color
+        background $Purple4
         separator #757575
         #                  border             background         text
-        focused_workspace  $bg-color          $bg-color          $text-color
-        inactive_workspace $inactive-bg-color $inactive-bg-color $inactive-text-color
+        focused_workspace  $Purple4          $Purple4         $text-color
+        inactive_workspace $Purple4          $Purple4         $inactive-text-color
         urgent_workspace   $urgent-bg-color   $urgent-bg-color   $text-color
     }
 }
+
+
+
 
 # floating windows
 for_window [class="Pavucontrol"] floating enable
 for_window [class="Kalu"] floating enable
 
+gaps inner 5
+gaps outer 5
+smart_gaps on
+smart_borders on
 ## Multimedia Keys
 
 # volume
@@ -245,15 +267,21 @@ bindsym $mod+n exec "/usr/bin/nemo"
 bindsym $mod+m exec "/usr/local/bin/switch-audio-port"
 
 # Autostart apps
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authesntication-agent-1
-exec --no-startup-id "compton -cC"
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id compton -b --config ~/.config/compton.conf
 exec --no-startup-id nm-applet
 exec --no-startup-id "nitrogen --restore"
 exec --no-startup-id "sleep 2s && kalu"
+exec --no-startup-id eval `ssh-agent` && ssh-add ~/.ssh/id-kh
 
 # Screen Shots
 bindsym Control+Print exec gnome-screenshot -ippz
 
 exec_always setxkbmap de neo
+exec --no-startup-id i3-msg 'workspace 2:; exec chromium; workspace 5:; exec chromium https://evernote.com/ ; workspace 3:;exec termite -e htop; exec nemo; workspace 4:;exec code; workspace 1:'
 assign [class="Thunderbird"] $workspace1
+assign [class="Spotify"] $workspace0
+
 exec thunderbird
+exec spotify
+exec_always feh --bg-scale ~/Pictures/Wallpaper/fractal.png
